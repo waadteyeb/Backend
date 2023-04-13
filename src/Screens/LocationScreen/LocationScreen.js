@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Button } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation,useRoute } from '@react-navigation/native';
 import{useForm} from 'react-hook-form';
 import CustomButton from'../../Components/CustomButton/CustomButton';
 const LocationScreen = () => {
   const navigation=useNavigation();
+  const route = useRoute();
 
   const {control,handleSubmit,formState:{errors}}=useForm();
   const [mapRegion, setMapRegion] = useState({
@@ -38,7 +39,11 @@ const LocationScreen = () => {
 
       console.log(location.coords.latitude, location.coords.longitude);
 
-      navigation.navigate('Addfurniture');
+      navigation.navigate('AddFourniture', {
+        location: {
+          type: 'Point',
+          coordinates: [location.coords.longitude, location.coords.latitude],
+        },});
     } catch (error) {
       console.error(error);
     }
@@ -67,9 +72,30 @@ const LocationScreen = () => {
   };
 
   useEffect(() => {
+    const userLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+      }
+
+      let location = await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+      });
+
+      setMapRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+
+      console.log(location.coords.latitude, location.coords.longitude);
+    };
+
     userLocation();
   }, []);
-  
+
 
   return (
     <View style={styles.container}>

@@ -2,50 +2,42 @@ import { View, Text ,SafeAreaView,StyleSheet} from 'react-native'
 import React,{useEffect,useState} from 'react';
 import { CheckBox } from 'react-native-elements';
 import CustomButton from'../../Components/CustomButton/CustomButton';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation ,useRoute } from '@react-navigation/native';
 import{useForm} from 'react-hook-form';
 
 const AvailabilityScreen = () => {
   const navigation=useNavigation();
+  const route = useRoute();
+  
 
   const {control,handleSubmit,formState:{errors}}=useForm();
  
- 
-   const[daytime,setDaytime]=useState(false);
-   const[weekday,setWeekday]=useState(false);
-   const[weekends,setWeekends]=useState(false);
-   const[flexible,setFlexible]=useState(false);
-   const Daytimeavailability=()=>{
-    setDaytime(true);
-    setWeekday(false);
-    setWeekends(false);
-    setFlexible(false);
-   
+  const [availability, setAvailability] = useState(null);
+  useEffect(() => {
+    if (route.params && route.params.availability) {
+      setAvailability(route.params.availability);
+    }
+  }, [route.params]);
+
+  const Daytimeavailability = () => {
+    setAvailability('daytime');
   };
-  const Weekdayavailability=()=>{
-    setDaytime(false);
-    setWeekday(true);
-    setWeekends(false);
-    setFlexible(false);
-   
+
+  const Weekdayavailability = () => {
+    setAvailability('weekday');
   };
-  const Weekendsavailability=()=>{
-    setDaytime(false);
-    setWeekday(false);
-    setWeekends(true);
-    setFlexible(false);
-   
+
+  const Weekendsavailability = () => {
+    setAvailability('weekends');
   };
-  const Flexibleavailability=()=>{
-    setDaytime(false);
-    setWeekday(false);
-    setWeekends(false);
-    setFlexible(true);
-   
+
+  const Flexibleavailability = () => {
+    setAvailability('flexible');
   };
-  const onSubmitPressed= ()=>{
-    navigation.navigate('Addfurniture');
-   };
+
+  const onSubmitPressed = () => {
+    navigation.navigate('AddFourniture', { availability });
+  };
 
   return (
     <SafeAreaView style={{  flex: 1,
@@ -54,7 +46,7 @@ const AvailabilityScreen = () => {
        <CheckBox
        title="Daytime on weekdays"
        
-       checked={daytime}
+       checked={availability === 'daytime'}
        checkedIcon="dot-circle-o"
        uncheckedIcon="circle-o"
        onPress={Daytimeavailability}
@@ -63,7 +55,7 @@ const AvailabilityScreen = () => {
        <CheckBox
        title="Weekday evenings"
        
-       checked={weekday}
+       checked={availability === 'weekday'}
        checkedIcon="dot-circle-o"
        uncheckedIcon="circle-o"
        onPress={Weekdayavailability}
@@ -72,7 +64,7 @@ const AvailabilityScreen = () => {
           <CheckBox
        title="Weekends"
        
-       checked={weekends}
+       checked={availability === 'weekends'}
        checkedIcon="dot-circle-o"
        uncheckedIcon="circle-o"
        onPress={Weekendsavailability}
@@ -81,7 +73,7 @@ const AvailabilityScreen = () => {
           <CheckBox
        title="I am flexible"
        
-       checked={flexible}
+       checked={availability === 'flexible'}
        checkedIcon="dot-circle-o"
        uncheckedIcon="circle-o"
        onPress={Flexibleavailability}
@@ -96,4 +88,4 @@ const AvailabilityScreen = () => {
  
   )}
 
-export default AvailabilityScreen
+export default AvailabilityScreen;
